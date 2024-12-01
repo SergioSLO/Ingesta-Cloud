@@ -5,6 +5,8 @@ import json
 from loguru import logger
 from botocore.exceptions import NoCredentialsError
 from datetime import datetime
+# Obtener la variable de entorno STAGE
+stage = os.getenv('STAGE', 'dev')  # Valor por defecto es 'dev' si no se encuentra
 
 # Configuración del loguru
 id = f"ingesta_{stage}_students"  # Identificador único del proceso
@@ -23,8 +25,7 @@ logger.add(log_filename,
            format="{time:YYYY-MM-DD HH:mm:ss.SSS} {level} {name} {message}", 
            level="INFO")
 
-# Obtener la variable de entorno STAGE
-stage = os.getenv('STAGE', 'dev')  # Valor por defecto es 'dev' si no se encuentra
+
 
 # Configuración de boto3
 dynamodb = boto3.resource('dynamodb')
