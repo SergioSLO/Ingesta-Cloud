@@ -5,6 +5,10 @@ import json
 from loguru import logger
 from botocore.exceptions import NoCredentialsError
 from datetime import datetime
+
+# docker run -e STAGE=dev -v C:\Users\LENOVO\.aws:/root/.aws ingesta_students
+
+
 # Obtener la variable de entorno STAGE
 stage = os.getenv('STAGE', 'dev')  # Valor por defecto es 'dev' si no se encuentra
 
@@ -28,12 +32,12 @@ logger.add(log_filename,
 
 
 # Configuración de boto3
-dynamodb = boto3.resource('dynamodb')
-s3 = boto3.client('s3')
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+s3 = boto3.client('s3', region_name='us-east-1')
 
 # Definir el nombre de la tabla y el bucket de S3
 TABLE_NAME = f'{stage}_t_students'  # Usando la variable de entorno
-S3_BUCKET_NAME = 'ciencia_datos_bucket_rockie'
+S3_BUCKET_NAME = 'ciencia-datos-bucket-rockie'
 S3_OBJECT_KEY = f'{stage}/t_students/students_data.csv'
 
 # Inicializar la tabla de DynamoDB
