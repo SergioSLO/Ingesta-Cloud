@@ -243,9 +243,6 @@ def create_table(stage, table_name):
     print(f"Tabla {table_name_full} creada en el stage {stage}.")
 
 # Crear todas las tablas para los diferentes stages
-"""for stage in tables:
+for stage in tables:
     for table in tables[stage]:
-        create_table(stage, table)"""
-
-for table in tables["dev"]:
-        create_table("dev", table)
+        create_table(stage, table)
