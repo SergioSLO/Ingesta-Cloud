@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  
+  # Definición de las instancias EC2
+  EC2InstanceDev:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.medium"
+      ImageId: "ami-01eed4fd757780e33"
+      KeyName: "vockey"  # Cambia esto por el nombre de tu clave
+      Tags:
+        - Key: "Name"
+          Value: "MV_Ciencia_Datos_dev"
+  
+  EC2InstanceTest:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.medium"
+      ImageId: "ami-01eed4fd757780e33"
+      KeyName: "vockey"  # Cambia esto por el nombre de tu clave
+      Tags:
+        - Key: "Name"
+          Value: "MV_Ciencia_Datos_test"
+  
+  EC2InstanceProd:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "t2.medium"
+      ImageId: "ami-01eed4fd757780e33"
+      KeyName: "vockey"  # Cambia esto por el nombre de tu clave
+      Tags:
+        - Key: "Name"
+          Value: "MV_Ciencia_Datos_prod"
+  
+  # Definición del bucket S3
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "ciencia-datos-bucket-rockie"  # Cambia esto por el nombre único de tu bucket
+      Tags:
+        - Key: "Name"
+          Value: "CienciaDatosBucket"
+  
+Outputs:
+  EC2InstanceDevID:
+    Description: "ID de la instancia EC2 para dev"
+    Value: !Ref EC2InstanceDev
+
+  EC2InstanceTestID:
+    Description: "ID de la instancia EC2 para test"
+    Value: !Ref EC2InstanceTest
+
+  EC2InstanceProdID:
+    Description: "ID de la instancia EC2 para prod"
+    Value: !Ref EC2InstanceProd
+
+  S3BucketName:
+    Description: "Nombre del bucket S3"
+    Value: !Ref S3Bucket
