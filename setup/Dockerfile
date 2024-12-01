@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 
 # Establecer la variable de entorno STAGE
-ENV STAGE=$STAGE
+ENV STAGE=dev
 
 # Copiar los archivos necesarios al contenedor
 WORKDIR /app

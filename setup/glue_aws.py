@@ -1,7 +1,6 @@
 import boto3
 import os
 
-stage = os.getenv('STAGE', 'error')
 # Configuración de AWS Glue
 glue_client = boto3.client('glue', region_name='us-east-1')  # Cambia la región si es necesario
 
@@ -240,6 +239,9 @@ def create_table(stage, table_name):
     )
     print(f"Tabla {table_name_full} creada en el stage {stage}.")
 
+
+
+stage = os.getenv('STAGE', 'error')
 # Crear todas las tablas para los diferentes stages
 for table in tables:
     create_table(stage, table)
