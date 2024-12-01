@@ -5,12 +5,12 @@ services:
   setup:
     build:
       context: ./setup  # Directorio donde están tus scripts
-      args:
-        STAGE: ${STAGE}  # Aquí pasamos el valor de STAGE
+    environment:
+      STAGE: ${STAGE}  # Aquí pasamos el valor de STAGE
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws  # Volumen con variable de entorno
     container_name: setup-container
-    command: ["sh", "-c", "python crear_folders.py && python glue_aws.py"]
+    command: ["python", "setup.py"]
 
   ingesta_activities:
     build:

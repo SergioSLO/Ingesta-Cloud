@@ -1,9 +1,6 @@
 FROM python:3.9-slim
 
 
-# Establecer la variable de entorno STAGE
-ENV STAGE=dev
-
 # Copiar los archivos necesarios al contenedor
 WORKDIR /app
 COPY . /app
@@ -12,4 +9,4 @@ COPY . /app
 RUN pip install boto3 loguru
 
 # Ejecutar ambos scripts secuencialmente
-CMD ["sh", "-c", "python crear_folders.py && python glue_aws.py"]
+CMD ["python", "setup.py"]

@@ -10,7 +10,15 @@ from datetime import datetime
 
 
 # Obtener la variable de entorno STAGE
-stage = os.getenv('STAGE', 'test')  # Valor por defecto es 'dev' si no se encuentra
+try:
+    stage = os.getenv('STAGE')  # Valor por defecto es 'test' si no se encuentra
+except Exception as e:
+    logger.error(f"Error getting STAGE environment variable: {e}")
+    exit()
+
+if stage not in ['dev', 'test', 'prod']:
+    logger.error(f"Invalid value for STAGE environment variable: {stage}")
+    exit()
 entitiy = 'rockie'
 
 # Configuración del loguru

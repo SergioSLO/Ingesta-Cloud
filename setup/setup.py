@@ -3,9 +3,15 @@ import os
 from loguru import logger
 # Configuración de AWS Glue
 glue_client = boto3.client('glue', region_name='us-east-1')  # Cambia la región si es necesario
-
+# Crear un cliente de S3
+s3_client = boto3.client('s3')
 # Nombre de la base de datos de Glue
 database_name = 'rockie_database'
+
+bucket_name = 'ciencia-datos-bucket-rockie'
+
+# Lista de tablas a crear
+tables = ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos']
 
 # Esquemas personalizados para algunas tablas
 schema_t_students = [
@@ -23,173 +29,58 @@ schema_t_students = [
     {"Name": "student_promos", "Type": "string", "Comment": ""}
 ]
 
-schema_t_rockies =  [
-  {
-    "Name": "tenant_id",
-    "Type": "string"
-  },
-  {
-    "Name": "student_id",
-    "Type": "string"
-  },
-  {
-    "Name": "level",
-    "Type": "int"
-  },
-  {
-    "Name": "experience",
-    "Type": "int"
-  },
-  {
-    "Name": "evolution",
-    "Type": "string"
-  },
-  {
-    "Name": "rockie_name",
-    "Type": "string"
-  },
-  {
-    "Name": "arms_acc",
-    "Type": "string"
-  },
-  {
-    "Name": "head_acc",
-    "Type": "string"
-  },
-  {
-    "Name": "body_acc",
-    "Type": "string"
-  },
-  {
-    "Name": "face_acc",
-    "Type": "string"
-  },
-  {
-    "Name": "bg_acc",
-    "Type": "string"
-  },
-  {
-    "Name": "student_equipment",
-    "Type": "string"
-  }
+schema_t_rockies = [
+    {"Name": "tenant_id", "Type": "string"},
+    {"Name": "student_id", "Type": "string"},
+    {"Name": "level", "Type": "int"},
+    {"Name": "experience", "Type": "int"},
+    {"Name": "evolution", "Type": "string"},
+    {"Name": "rockie_name", "Type": "string"},
+    {"Name": "arms_acc", "Type": "string"},
+    {"Name": "head_acc", "Type": "string"},
+    {"Name": "body_acc", "Type": "string"},
+    {"Name": "face_acc", "Type": "string"},
+    {"Name": "bg_acc", "Type": "string"},
+    {"Name": "student_equipment", "Type": "string"}
 ]
 
 schema_t_rewards = [
-  {
-    "Name": "tenant_id",
-    "Type": "string"
-  },
-  {
-    "Name": "student_id",
-    "Type": "string"
-  },
-  {
-    "Name": "reward_id",
-    "Type": "string"
-  },
-  {
-    "Name": "experience",
-    "Type": "int"
-  },
-  {
-    "Name": "activity_id",
-    "Type": "string"
-  },
-  {
-    "Name": "rockie_coins",
-    "Type": "int"
-  }
+    {"Name": "tenant_id", "Type": "string"},
+    {"Name": "student_id", "Type": "string"},
+    {"Name": "reward_id", "Type": "string"},
+    {"Name": "experience", "Type": "int"},
+    {"Name": "activity_id", "Type": "string"},
+    {"Name": "rockie_coins", "Type": "int"}
 ]
 
 schema_t_promo = [
-  {
-    "Name": "tenant_id",
-    "Type": "string"
-  },
-  {
-    "Name": "product_id",
-    "Type": "string"
-  },
-  {
-    "Name": "price",
-    "Type": "double"
-  },
-  {
-    "Name": "image",
-    "Type": "string"
-  },
-  {
-    "Name": "product_brand",
-    "Type": "string"
-  },
-  {
-    "Name": "category",
-    "Type": "string"
-  },
-  {
-    "Name": "product_name",
-    "Type": "string"
-  }
+    {"Name": "tenant_id", "Type": "string"},
+    {"Name": "product_id", "Type": "string"},
+    {"Name": "price", "Type": "double"},
+    {"Name": "image", "Type": "string"},
+    {"Name": "product_brand", "Type": "string"},
+    {"Name": "category", "Type": "string"},
+    {"Name": "product_name", "Type": "string"}
 ]
-
 
 schema_t_accesory = [
-  {
-    "Name": "tenant_id",
-    "Type": "string"
-  },
-  {
-    "Name": "product_id",
-    "Type": "string"
-  },
-  {
-    "Name": "price",
-    "Type": "double"
-  },
-  {
-    "Name": "image",
-    "Type": "string"
-  },
-  {
-    "Name": "category",
-    "Type": "string"
-  },
-  {
-    "Name": "product_name",
-    "Type": "string"
-  }
+    {"Name": "tenant_id", "Type": "string"},
+    {"Name": "product_id", "Type": "string"},
+    {"Name": "price", "Type": "double"},
+    {"Name": "image", "Type": "string"},
+    {"Name": "category", "Type": "string"},
+    {"Name": "product_name", "Type": "string"}
 ]
+
 schema_t_activities = [
-  {
-    "Name": "tenant_id",
-    "Type": "string"
-  },
-  {
-    "Name": "activity_id",
-    "Type": "string"
-  },
-  {
-    "Name": "student_id",
-    "Type": "string"
-  },
-  {
-    "Name": "activity_type",
-    "Type": "string"
-  },
-  {
-    "Name": "creation_date",
-    "Type": "string"
-  },
-  {
-    "Name": "time",
-    "Type": "int"
-  }
+    {"Name": "tenant_id", "Type": "string"},
+    {"Name": "activity_id", "Type": "string"},
+    {"Name": "student_id", "Type": "string"},
+    {"Name": "activity_type", "Type": "string"},
+    {"Name": "creation_date", "Type": "string"},
+    {"Name": "time", "Type": "int"}
 ]
 
-
-
-# Lista de tablas a crear
-tables = ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos']
 
 # Función para crear una tabla en AWS Glue
 def create_table(stage, table_name):
@@ -240,16 +131,40 @@ def create_table(stage, table_name):
     print(f"Tabla {table_name_full} creada en el stage {stage}.")
 
 
-# Obtener la variable de entorno STAGE
-try:
-    stage = os.getenv('STAGE')  # Valor por defecto es 'test' si no se encuentra
-except Exception as e:
-    logger.error(f"Error getting STAGE environment variable: {e}")
-    exit()
 
-if stage not in ['dev', 'test', 'prod']:
-    logger.error(f"Invalid value for STAGE environment variable: {stage}")
-    exit()
-# Crear todas las tablas para los diferentes stages
-for table in tables:
-    create_table(stage, table)
+
+
+# Función para crear las carpetas en el bucket S3
+def create_s3_folders(stage):
+    for table in tables:
+        # Definir la ruta del subfolder
+        folder_path = f"{stage}/{table}/"
+        # Crear el subfolder (en S3 esto solo se define por el nombre, no es un directorio real)
+        s3_client.put_object(Bucket=bucket_name, Key=folder_path)
+        print(f"Carpeta creada: {folder_path}")
+
+
+
+
+
+def main():
+    # Obtener la variable de entorno STAGE
+    try:
+        stage = os.getenv('STAGE') 
+    except Exception as e:
+        logger.error(f"Error getting STAGE environment variable: {e}")
+        exit()
+
+    if stage not in ['dev', 'test', 'prod']:
+        logger.error(f"Invalid value for STAGE environment variable: {stage}")
+        exit()
+
+    # Ejecutar la función para crear las carpetas
+    create_s3_folders(stage)
+    # Crear todas las tablas para los diferentes stages
+    for table in tables:
+        create_table(stage, table)
+
+
+if __name__ == '__main__':
+    main()
