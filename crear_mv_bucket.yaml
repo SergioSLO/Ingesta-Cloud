@@ -11,6 +11,8 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "MV_Ciencia_Datos_dev"
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
   
   EC2InstanceTest:
     Type: "AWS::EC2::Instance"
@@ -21,7 +23,9 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "MV_Ciencia_Datos_test"
-  
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+
   EC2InstanceProd:
     Type: "AWS::EC2::Instance"
     Properties:
@@ -31,7 +35,9 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "MV_Ciencia_Datos_prod"
-  
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+
   # Definición del bucket S3
   S3Bucket:
     Type: "AWS::S3::Bucket"
@@ -40,7 +46,24 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "CienciaDatosBucket"
-  
+
+  InstanceSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Abrir puertos para base de datos y Adminer"
+      SecurityGroupIngress:
+        - IpProtocol: "tcp"
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: "tcp"
+          FromPort: "8005"
+          ToPort: "8005"
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: "tcp"
+          FromPort: "8080"
+          ToPort: "8080"
+
 Outputs:
   EC2InstanceDevID:
     Description: "ID de la instancia EC2 para dev"
