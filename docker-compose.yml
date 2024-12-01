@@ -26,7 +26,7 @@ services:
 
   ingesta_purchasables:
     build:
-      context: ./Ingesta_purchasables
+      context: ./Ingesta_purshables
     environment:
       - STAGE=${STAGE}
     volumes:
@@ -59,3 +59,16 @@ services:
     command: ["python", "ingesta.py"]
     depends_on:
       - setup
+
+  Ingesta_students:
+    build:
+      context: ./Ingesta_students
+    environment:
+      - STAGE=${STAGE}
+    volumes:
+      - ${AWS_CREDENTIALS_DIR}:/root/.aws
+    container_name: ingesta_students
+    command: ["python", "ingesta.py"]
+    depends_on:
+      - setup
+
