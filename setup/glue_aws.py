@@ -1,5 +1,7 @@
 import boto3
+import os
 
+stage = os.getenv('STAGE', 'error')
 # Configuración de AWS Glue
 glue_client = boto3.client('glue', region_name='us-east-1')  # Cambia la región si es necesario
 
@@ -188,11 +190,7 @@ schema_t_activities = [
 
 
 # Lista de tablas a crear
-tables = {
-    'prod': ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos'],
-    'test': ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos'],
-    'dev': ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos']
-}
+tables = ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos']
 
 # Función para crear una tabla en AWS Glue
 def create_table(stage, table_name):
@@ -243,6 +241,5 @@ def create_table(stage, table_name):
     print(f"Tabla {table_name_full} creada en el stage {stage}.")
 
 # Crear todas las tablas para los diferentes stages
-for stage in tables:
-    for table in tables[stage]:
-        create_table(stage, table)
+for table in tables:
+    create_table(stage, table)
