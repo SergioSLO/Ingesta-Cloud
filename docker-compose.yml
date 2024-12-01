@@ -60,7 +60,7 @@ services:
     depends_on:
       - setup
 
-  Ingesta_students:
+  ingesta_students:
     build:
       context: ./Ingesta_students
     environment:
