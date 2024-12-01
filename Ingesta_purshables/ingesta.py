@@ -46,11 +46,11 @@ s3 = boto3.client('s3', region_name='us-east-1')
 
 # Definir el nombre de la tabla y el bucket de S3
 TABLE_NAME = f'{stage}_t_purchasable'  # Usando la variable de entorno
-S3_BUCKET_NAME = 'ciencia-datos-bucket-rockie'
-S3_OBJECT_KEY_ACCESORY = f'{stage}/t_accesories/accesories_data.csv'
-S3_OBJECT_KEY_PROMO = f'{stage}/t_promos/promos_data.csv'
-FILE_NAME_ACCESORY = '/tmp/accesories_data.csv'
-FILE_NAME_PROMO = '/tmp/promos_data.csv'
+S3_BUCKET_NAME = f'ciencia-datos-bucket-rockie-{stage}'
+S3_OBJECT_KEY_ACCESORY = f't_accesories/accesories_data_{stage}.csv'
+S3_OBJECT_KEY_PROMO = f't_promos/promos_data_{stage}.csv'
+FILE_NAME_ACCESORY = f'/tmp/accesories_data_{stage}.csv'
+FILE_NAME_PROMO = f'/tmp/promos_data_{stage}.csv'
 
 # Inicializar la tabla de DynamoDB
 table = dynamodb.Table(TABLE_NAME)

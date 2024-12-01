@@ -6,9 +6,6 @@ glue_client = boto3.client('glue', region_name='us-east-1')  # Cambia la región
 # Crear un cliente de S3
 s3_client = boto3.client('s3')
 # Nombre de la base de datos de Glue
-database_name = 'rockie_database'
-
-bucket_name = 'ciencia-datos-bucket-rockie'
 
 # Lista de tablas a crear
 tables = ['t_rockies', 't_students', 't_rewards', 't_activities', 't_accesories', 't_promos']
@@ -83,8 +80,7 @@ schema_t_activities = [
 
 
 # Función para crear una tabla en AWS Glue
-def create_table(stage, table_name):
-    table_name_full = f"{stage}_{table_name}"
+def create_table(stage, table_name, bucket_name, database_name):
     
     # Determinar el esquema dependiendo del nombre de la tabla
     if table_name == 't_students':
@@ -100,15 +96,15 @@ def create_table(stage, table_name):
     elif table_name == 't_activities':
         schema = schema_t_activities
     else:
-        print(f"Esquema no definido para la tabla {table_name_full}.")
+        logger.error(f"Esquema no definido para la tabla {table_name}.")
     
     # Crear la definición de la tabla
     table_input = {
-        'Name': table_name_full,
-        'Description': f"Tabla {table_name_full} para el stage {stage}",
+        'Name': table_name,
+        'Description': f"Tabla {table_name} para el stage {stage}",
         'StorageDescriptor': {
             'Columns': schema,
-            'Location': f"s3://ciencia-datos-bucket-rockie/{stage}/{table_name}/",  # Cambia el bucket y la ruta
+            'Location': f"s3://{bucket_name}/{table_name}/",  # Cambia el bucket y la ruta
             'InputFormat': 'org.apache.hadoop.mapred.TextInputFormat',
             'OutputFormat': 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
             'SerdeInfo': {
@@ -128,20 +124,20 @@ def create_table(stage, table_name):
         DatabaseName=database_name,
         TableInput=table_input
     )
-    print(f"Tabla {table_name_full} creada en el stage {stage}.")
+    logger.info(f"Tabla {table_name} creada en el stage {stage}.")
 
 
 
 
 
 # Función para crear las carpetas en el bucket S3
-def create_s3_folders(stage):
+def create_s3_folders(bucket_name):
     for table in tables:
         # Definir la ruta del subfolder
-        folder_path = f"{stage}/{table}/"
+        folder_path = f"{table}/"
         # Crear el subfolder (en S3 esto solo se define por el nombre, no es un directorio real)
         s3_client.put_object(Bucket=bucket_name, Key=folder_path)
-        print(f"Carpeta creada: {folder_path}")
+        logger.info(f"Carpeta creada: {folder_path}")
 
 
 
@@ -159,11 +155,15 @@ def main():
         logger.error(f"Invalid value for STAGE environment variable: {stage}")
         exit()
 
+    bucket_name = f'ciencia-datos-bucket-rockie-{stage}'
+    database_name = f'rockie_database_{stage}'
+
+
     # Ejecutar la función para crear las carpetas
-    create_s3_folders(stage)
+    #create_s3_folders(bucket_name)
     # Crear todas las tablas para los diferentes stages
     for table in tables:
-        create_table(stage, table)
+        create_table(stage, table, bucket_name, database_name)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
-  
+
   # Definición de las instancias EC2
   EC2InstanceDev:
     Type: "AWS::EC2::Instance"
@@ -13,7 +13,7 @@ Resources:
           Value: "MV_Ciencia_Datos_dev"
       SecurityGroupIds:
         - !Ref InstanceSecurityGroup
-  
+
   EC2InstanceTest:
     Type: "AWS::EC2::Instance"
     Properties:
@@ -38,14 +38,53 @@ Resources:
       SecurityGroupIds:
         - !Ref InstanceSecurityGroup
 
-  # Definición del bucket S3
-  S3Bucket:
+  # Definición del bucket S3 para Dev
+  S3BucketDev:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: "ciencia-datos-bucket-rockie"  # Cambia esto por el nombre único de tu bucket
+      BucketName: "ciencia-datos-bucket-rockie-dev"  # Cambia esto por el nombre único de tu bucket
       Tags:
         - Key: "Name"
-          Value: "CienciaDatosBucket"
+          Value: "CienciaDatosBucketDev"
+
+  # Definición del bucket S3 para Test
+  S3BucketTest:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "ciencia-datos-bucket-rockie-test"  # Cambia esto por el nombre único de tu bucket
+      Tags:
+        - Key: "Name"
+          Value: "CienciaDatosBucketTest"
+
+  # Definición del bucket S3 para Prod
+  S3BucketProd:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: "ciencia-datos-bucket-rockie-prod"  # Cambia esto por el nombre único de tu bucket
+      Tags:
+        - Key: "Name"
+          Value: "CienciaDatosBucketProd"
+
+  GlueDatabaseDev:
+    Type: "AWS::Glue::Database"
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: "rockie_database_dev"
+
+  GlueDatabaseTest:
+    Type: "AWS::Glue::Database"
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: "rockie_database_test"
+
+  GlueDatabaseProd:
+    Type: "AWS::Glue::Database"
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: "rockie_database_prod"
 
   InstanceSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
@@ -77,6 +116,14 @@ Outputs:
     Description: "ID de la instancia EC2 para prod"
     Value: !Ref EC2InstanceProd
 
-  S3BucketName:
-    Description: "Nombre del bucket S3"
-    Value: !Ref S3Bucket
+  S3BucketNameDev:
+    Description: "Nombre del bucket S3 para Dev"
+    Value: !Ref S3BucketDev
+
+  S3BucketNameTest:
+    Description: "Nombre del bucket S3 para Test"
+    Value: !Ref S3BucketTest
+
+  S3BucketNameProd:
+    Description: "Nombre del bucket S3 para Prod"
+    Value: !Ref S3BucketProd

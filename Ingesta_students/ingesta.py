@@ -45,8 +45,9 @@ s3 = boto3.client('s3', region_name='us-east-1')
 
 # Definir el nombre de la tabla y el bucket de S3
 TABLE_NAME = f'{stage}_t_students'  # Usando la variable de entorno
-S3_BUCKET_NAME = 'ciencia-datos-bucket-rockie'
-S3_OBJECT_KEY = f'{stage}/t_students/students_data.csv'
+S3_BUCKET_NAME = f'ciencia-datos-bucket-rockie-{stage}'
+S3_OBJECT_KEY = f't_students/students_data_{stage}.csv'
+FILE_NAME = f'/tmp/students_data_{stage}.csv'
 
 # Inicializar la tabla de DynamoDB
 table = dynamodb.Table(TABLE_NAME)
@@ -97,7 +98,7 @@ def extract_data(items):
             }
 
             # Escribir los datos extraídos a un archivo CSV temporal
-            with open("/tmp/students_data.csv", "a", newline="") as csvfile:
+            with open(FILE_NAME, "a", newline="") as csvfile:
                 fieldnames = row.keys()
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writerow(row)
@@ -110,7 +111,7 @@ def extract_data(items):
 def upload_to_s3():
     logger.info(f"{id} - Uploading CSV to S3 at {S3_OBJECT_KEY}.")
     try:
-        with open("/tmp/students_data.csv", "rb") as data:
+        with open(FILE_NAME, "rb") as data:
             s3.upload_fileobj(data, S3_BUCKET_NAME, S3_OBJECT_KEY)
         logger.info(f"{id} - File uploaded successfully to S3.")
     except Exception as e:
