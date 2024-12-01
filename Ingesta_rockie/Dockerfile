@@ -17,4 +17,4 @@ RUN mkdir -p /var/log/ciencia_datos
 ENV STAGE=dev
 
 # Comando para ejecutar el script
-CMD ["python", "ingesta_rockies.py"]
+CMD ["python", "ingesta.py"]

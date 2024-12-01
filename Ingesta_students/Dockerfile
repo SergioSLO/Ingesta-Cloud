@@ -20,4 +20,4 @@ RUN mkdir -p /var/log/ciencia_datos
 EXPOSE 80
 
 # Comando para ejecutar el script
-CMD ["python", "ingesta_dynamodb_s3.py"]
+CMD ["python", "ingesta.py"]
