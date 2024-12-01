@@ -1,7 +1,5 @@
 FROM python:3.9-slim
 
-# Definir un argumento para el STAGE
-ARG STAGE=dev
 
 # Establecer la variable de entorno STAGE
 ENV STAGE=$STAGE
