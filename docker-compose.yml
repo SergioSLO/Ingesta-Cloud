@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+
+  setup:
+    build:
+      context: ./setup  # Directorio donde están tus scripts
+      args:
+        STAGE: ${STAGE}  # Aquí pasamos el valor de STAGE
+    volumes:
+      - ${AWS_CREDENTIALS_DIR}:/root/.aws  # Volumen con variable de entorno
+    container_name: setup-container
+    command: ["sh", "-c", "python crear_folders.py && python glue_aws.py"]
+
+  ingesta_activities:
+    build:
+      context: ./Ingesta_activities
+    environment:
+      - STAGE=${STAGE}
+    volumes:
+      - ${AWS_CREDENTIALS_DIR}:/root/.aws
+    container_name: ingesta-activities
+    command: ["python", "ingesta.py"]
+    depends_on:
+      - setup
+
+  ingesta_purchasables:
+    build:
+      context: ./Ingesta_purchasables
+    environment:
+      - STAGE=${STAGE}
+    volumes:
+      - ${AWS_CREDENTIALS_DIR}:/root/.aws
+    container_name: ingesta-purchasables
+    command: ["python", "ingesta.py"]
+    depends_on:
+      - setup
+
+  ingesta_reward:
+    build:
+      context: ./Ingesta_reward
+    environment:
+      - STAGE=${STAGE}
+    volumes:
+      - ${AWS_CREDENTIALS_DIR}:/root/.aws
+    container_name: ingesta-reward
+    command: ["python", "ingesta.py"]
+    depends_on:
+      - setup
+
+  ingesta_rockie:
+    build:
+      context: ./Ingesta_rockie
+    environment:
+      - STAGE=${STAGE}
+    volumes:
+      - ${AWS_CREDENTIALS_DIR}:/root/.aws
+    container_name: ingesta-rockie
+    command: ["python", "ingesta.py"]
+    depends_on:
+      - setup

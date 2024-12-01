@@ -11,9 +11,10 @@ from datetime import datetime
 
 # Obtener la variable de entorno STAGE
 stage = os.getenv('STAGE', 'test')  # Valor por defecto es 'dev' si no se encuentra
+entitiy = 'reward'
 
 # Configuración del loguru
-id = f"ingesta_{stage}_students"  # Identificador único del proceso
+id = f"ingesta_{stage}_{entitiy}"  # Identificador único del proceso
 log_dir = "/var/log/ciencia_datos"  # Directorio común de logs en la máquina virtual
 
 # Crear el directorio si no existe
@@ -36,9 +37,10 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 s3 = boto3.client('s3', region_name='us-east-1')
 
 # Definir el nombre de la tabla y el bucket de S3
-TABLE_NAME = f'{stage}_t_students'  # Usando la variable de entorno
+TABLE_NAME = f'{stage}_t_rewards'  # Usando la variable de entorno
 S3_BUCKET_NAME = 'ciencia-datos-bucket-rockie'
-S3_OBJECT_KEY = f'{stage}/t_students/students_data.csv'
+S3_OBJECT_KEY = f'{stage}/t_rewards/rewards_data.csv'
+FILE_NAME = '/tmp/rewards_data.csv'
 
 # Inicializar la tabla de DynamoDB
 table = dynamodb.Table(TABLE_NAME)
@@ -65,36 +67,29 @@ def scan_table():
 
 # Función para extraer y transformar los datos
 def extract_data(items):
-    logger.info(f"{id} - Extracting and transforming student data.")
+    logger.info(f"{id} - Extracting and transforming {entitiy} data.")
     for item in items:
         try:
             # Asegurarse de que los datos sean del formato correcto
-            student_data = item.get('student_data', {})
-            student_promos = item.get('student_promos', [])
+            reward_data = item.get('reward_data', {})
 
             # Extraer los datos de interés
             row = {
                 'tenant_id': item.get('tenant_id', ''),
                 'student_id': item.get('student_id', ''),
-                'student_email': item.get('student_email', ''),
-                'creation_date': item.get('creation_date', ''),
-                'student_name': student_data.get('student_name', ''),
-                'password': student_data.get('password', ''),
-                'birthday': student_data.get('birthday', ''),
-                'gender': student_data.get('gender', ''),
-                'telephone': student_data.get('telephone', ''),
-                'rockie_coins': student_data.get('rockie_coins', 0),
-                'rockie_gems': student_data.get('rockie_gems', 0),
-                'student_promos': json.dumps(student_promos)  # Convertir la lista de promos en JSON
+                'reward_id': item.get('reward_id', ''),
+                'experience': item.get('experience', 0),
+                'activity_id': reward_data.get('activity_id', ''),
+                'rockie_coins': reward_data.get('rockie_coins', 0),
             }
 
             # Escribir los datos extraídos a un archivo CSV temporal
-            with open("/tmp/students_data.csv", "a", newline="") as csvfile:
+            with open(FILE_NAME, "a", newline="") as csvfile:
                 fieldnames = row.keys()
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writerow(row)
 
-            logger.info(f"{id} - Processed student: {item.get('student_id', 'unknown')}.")
+            logger.info(f"{id} - Processed {entitiy}: {item.get('reward_id', 'unknown')}.")
         except Exception as e:
             logger.error(f"{id} - Error processing item: {e}")
 
@@ -102,7 +97,7 @@ def extract_data(items):
 def upload_to_s3():
     logger.info(f"{id} - Uploading CSV to S3 at {S3_OBJECT_KEY}.")
     try:
-        with open("/tmp/students_data.csv", "rb") as data:
+        with open(FILE_NAME, "rb") as data:
             s3.upload_fileobj(data, S3_BUCKET_NAME, S3_OBJECT_KEY)
         logger.info(f"{id} - File uploaded successfully to S3.")
     except Exception as e:

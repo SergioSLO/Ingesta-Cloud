@@ -14,7 +14,7 @@ RUN pip install boto3 loguru
 RUN mkdir -p /var/log/ciencia_datos
 
 # Establecer la variable de entorno para el STAGE
-ENV STAGE=dev
+ENV STAGE=test
 
 # Comando para ejecutar el script
 CMD ["python", "ingesta.py"]
