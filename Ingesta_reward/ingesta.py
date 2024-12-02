@@ -46,7 +46,7 @@ s3 = boto3.client('s3', region_name='us-east-1')
 
 # Definir el nombre de la tabla y el bucket de S3
 TABLE_NAME = f'{stage}_t_rewards'  # Usando la variable de entorno
-S3_BUCKET_NAME = 'ciencia-datos-bucket-rockie'
+S3_BUCKET_NAME = f'ciencia-datos-bucket-rockie-{stage}'
 S3_OBJECT_KEY = f't_rewards/rewards_data_{stage}.csv'
 FILE_NAME = f'/tmp/rewards_data_{stage}.csv'
 
