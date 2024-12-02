@@ -9,6 +9,7 @@ services:
       STAGE: ${STAGE}  # Aquí pasamos el valor de STAGE
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws  # Volumen con variable de entorno
+      - ${DATA_DIR}:/var/log/ciencia_datos
     container_name: setup-container
     command: ["python", "setup.py"]
 
@@ -19,6 +20,7 @@ services:
       - STAGE=${STAGE}
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws
+      - ${DATA_DIR}:/var/log/ciencia_datos
     container_name: ingesta-activities
     command: ["python", "ingesta.py"]
     depends_on:
@@ -31,6 +33,7 @@ services:
       - STAGE=${STAGE}
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws
+      - ${DATA_DIR}:/var/log/ciencia_datos
     container_name: ingesta-purchasables
     command: ["python", "ingesta.py"]
     depends_on:
@@ -43,6 +46,7 @@ services:
       - STAGE=${STAGE}
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws
+      - ${DATA_DIR}:/var/log/ciencia_datos
     container_name: ingesta-reward
     command: ["python", "ingesta.py"]
     depends_on:
@@ -55,6 +59,7 @@ services:
       - STAGE=${STAGE}
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws
+      - ${DATA_DIR}:/var/log/ciencia_datos
     container_name: ingesta-rockie
     command: ["python", "ingesta.py"]
     depends_on:
@@ -67,6 +72,7 @@ services:
       - STAGE=${STAGE}
     volumes:
       - ${AWS_CREDENTIALS_DIR}:/root/.aws
+      - ${DATA_DIR}:/var/log/ciencia_datos
     container_name: ingesta_students
     command: ["python", "ingesta.py"]
     depends_on:
